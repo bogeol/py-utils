@@ -13,6 +13,8 @@
 # ATTENTION
 #  - ****** [(slice_begin, slice_end), ...] > list[x:y] > [x, y) > so index slice_end need +1 ******
 
+import os, time, re, inspect
+
 
 def split_number_to_x1x2_plus_y1y2(number, chunk):
     if type(number) != int:
@@ -281,3 +283,49 @@ def split_list_by_number(source_list, number):
 
 def split_list_by_chunk(source_list, chunk):
     return split_list_by_chunk_return_list(source_list, chunk)
+
+
+def peek_file(path, line_num):
+    with open(path, "r", encoding="utf-8") as f:
+        for _ in range(line_num):
+            print(f.readline())
+
+
+def listdir(path):
+    result = {}
+    result["name"] = []
+    result["path"] = []
+    result["abs"] = []
+    for f_d in os.listdir(path):
+        result["name"].append(f_d)
+        if "\\" in path:
+            if path.endswith("\\"):
+                result["path"].append(path + f_d)
+                result["abs"].append(os.path.abspath(path + f_d))
+            else:
+                result["path"].append(path + "\\" + f_d)
+                result["abs"].append(os.path.abspath(path + "\\" + f_d))
+        if "/" in path:
+            if path.endswith("/"):
+                result["path"].append(path + f_d)
+                result["abs"].append(os.path.abspath(path + f_d))
+            else:
+                result["path"].append(path + "/" + f_d)
+                result["abs"].append(os.path.abspath(path + "/" + f_d))
+    return result
+
+
+def print_list(list_):
+    print(*list_, sep="\n")
+
+
+def current_time():
+    return time.strftime("%Y%m%d_%H%M", time.localtime(time.time()))
+
+
+def print_var(var):
+    callers_local_vars = inspect.currentframe().f_back.f_locals.items()
+    varname = [
+        var_name for var_name, var_val in callers_local_vars if var_val is var
+    ][0]
+    print(f"{varname}: {var}")
